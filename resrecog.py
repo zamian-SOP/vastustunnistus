@@ -1,14 +1,16 @@
+#Import necessary packages
 import numpy as np
 import argparse
 import imutils
 import cv2
 
-# construct the argument parse and parse the arguments
+#Create argument parser
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video",
-	help="path to the (optional) video file")
+	help="Path to optional video file.")
 args = vars(ap.parse_args())
 
+#Define list of boundaries to parse through
 boundaries = [
 	([0, 0, 100], [75, 75, 250]),
 	([100, 100, 0], [250, 250, 75]),
@@ -16,31 +18,28 @@ boundaries = [
 	([0, 100, 0], [75, 250, 75])
 ]
 
-# if a video path was not supplied, grab the reference
-# to the webcam
+#Grab webcam if no video file, else take video file
 if not args.get("video", False):
 	camera = cv2.VideoCapture(0)
-# otherwise, grab a reference to the video file
 else:
 	camera = cv2.VideoCapture(args["video"])
 
 
 
-# keep looping
+#Loop until manually broken or given video file ends
 while True:
-	# grab the current frame
+	#Grab the current frame
     (grabbed, frame) = camera.read()
-    #Create a black version of given image as background
+    #Create a black version of grabbed frame as background
     black = [0,0,0]
     blacknp = np.array(black, dtype = "uint8")
     blackmask = cv2.inRange(frame, blacknp, blacknp)
     filtered = cv2.bitwise_and(frame,frame,mask=blackmask)
-	# if we are viewing a video and we did not grab a frame,
-	# then we have reached the end of the video
+	#If a video was given and no frame grabbed, the video has ended
     if args.get("video") and not grabbed:
 		break
 
-    #yooloo
+    #Loop through the boundaries in the frame
     for (lower, upper) in boundaries:
     	#Make numpy arrays out of boundaries
     	lower = np.array(lower, dtype = "uint8")
@@ -52,13 +51,13 @@ while True:
     	#Add the filtered color to final image
     	filtered = cv2.addWeighted(filtered,1, output,1, 0)
 
-    #Show result and wait for user to close window
-    cv2.imshow("video", np.hstack([filtered,frame]))
+    #Show resulting frame
+    cv2.imshow("Video", np.hstack([filtered,frame]))
     key = cv2.waitKey(1) & 0xFF
-	# if the 'q' key is pressed, stop the loop
+	#Stop looping if "q" is pressed
     if key == ord("q"):
         break
 
-# cleanup the camera and close any open windows
+#Close open windows and camera as the program ends
 camera.release()
 cv2.destroyAllWindows()
