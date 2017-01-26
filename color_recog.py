@@ -18,17 +18,27 @@ boundaries = [
 	([25, 146, 190], [62, 174, 250]),
 	([103, 86, 65], [145, 133, 128])
 ]
+
+black = [0,0,0]
+blacknp = np.array(black, dtype = "uint8")
+mask = cv2.inRange(image, blacknp, blacknp)
+filtered = cv2.bitwise_and(image,image,mask=mask)
+
+for x in boundaries:
 # loop over the boundaries
-for (lower, upper) in boundaries:
-	# create NumPy arrays from the boundaries
-	lower = np.array(lower, dtype = "uint8")
-	upper = np.array(upper, dtype = "uint8")
+	for (lower, upper) in boundaries:
+		# create NumPy arrays from the boundaries
+		lower = np.array(lower, dtype = "uint8")
+		upper = np.array(upper, dtype = "uint8")
 
-	# find the colors within the specified boundaries and apply
-	# the mask
-	mask = cv2.inRange(image, lower, upper)
-	output = cv2.bitwise_and(image, image, mask = mask)
+		# find the colors within the specified boundaries and apply
+		# the mask
+		mask = cv2.inRange(image, lower, upper)
+		output = cv2.bitwise_and(image, image, mask = mask)
+		# show the images
+		#cv2.imshow("images", np.hstack([image, output]))
+		#cv2.waitKey(0)
 
-	# show the images
-	cv2.imshow("images", np.hstack([image, output]))
+	filtered = cv2.addWeighted(filtered,0.5, output,0.5, 0)
+	cv2.imshow("images", np.hstack([output,filtered]))
 	cv2.waitKey(0)
