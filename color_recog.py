@@ -21,8 +21,8 @@ boundaries = [
 
 black = [0,0,0]
 blacknp = np.array(black, dtype = "uint8")
-mask = cv2.inRange(image, blacknp, blacknp)
-filtered = cv2.bitwise_and(image,image,mask=mask)
+blackmask = cv2.inRange(image, blacknp, blacknp)
+filtered = cv2.bitwise_and(image,image,mask=blackmmask)
 
 for x in boundaries:
 # loop over the boundaries
